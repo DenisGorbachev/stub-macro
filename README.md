@@ -9,37 +9,50 @@
 
 `stub!()` is a better version of `todo!()`
 
-`todo!()` can’t be assigned to a variable. But `stub!()` can be assigned like this: `let username = stub!(String)`, so you can specify the type of the variable, but not its value.
+`stub!()` can be assigned to a variable: `let username = stub!(String)`.
+
+This allows you to specify just type of the variable and continue working on other code, then come back later and specify its value.
 
 ### Examples
 
 ```rust
-pub fn simple() {
+pub fn assign() {
     // you can assign stub!() to a variable
     let username = stub!(String);
     println!("Hello {username}")
 }
 
-pub fn stub_in_return_position() -> String {
+pub fn return_position() -> String {
     // you can use stub!() like todo!() in return position
     stub!()
 }
 
-pub fn more_assignment_examples() {
+pub fn infer_type() {
     // you can let the compiler automatically infer the type
     let status = stub!();
-    # if status { println!("Success") }
+    if status { println!("Success") }
+}
+
+pub fn explicit_type() {
+    // you can specify the type explicitly
     let status: bool = stub!();
-    let status = stub!(bool);
-    let status = stub!(bool, "Assigned to: {}", "John");
+    if status { println!("Success") }
+}
+
+pub fn custom_message() {
+    // you can add a custom message
+    let status: bool = stub!("Send a request to GitHub");
+    if status { println!("Success") }
 }
 
 pub fn impl_example() -> impl Iterator<Item=u32> {
-    // `impl Trait` must be written as `impl dyn Trait` due to `macro_rules!` limitation
+    // you can use stub!() in return position even with `impl Trait` return type
+    // note: `impl Trait` must be written as `impl dyn Trait` due to `macro_rules!` limitation
     stub!(impl dyn Iterator<Item=u32>)
 }
 
 pub fn explicit_type_with_message_example() -> u32 {
+    // you can add
     stub!(u32, "Assigned to: {}", "John")
 }
 
