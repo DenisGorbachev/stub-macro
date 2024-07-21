@@ -1,14 +1,14 @@
 [package]
 name = "stub-macro"
 description = "stub!() is a better version of todo!() that can be assigned to a variable"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "Apache-2.0 OR MIT"
 homepage = "https://github.com/DenisGorbachev/stub-macro"
 repository = "https://github.com/DenisGorbachev/stub-macro"
 readme = "README.md"
 keywords = ["stub", "utils", "testing", "development"]
-categories = ["rust-patterns", "development-tools"]
+categories = ["rust-patterns", "development-tools", "no-std", "no-std::no-alloc"]
 
 [package.metadata.details]
 title = "stub! - a better todo!"
