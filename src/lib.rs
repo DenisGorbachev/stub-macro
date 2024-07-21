@@ -1,6 +1,13 @@
-//! `stub!()` is a better version of `todo!()`
+//! `stub!()` can be assigned to a variable:
 //!
-//! `stub!()` can be assigned to a variable: `let username = stub!(String)`.
+//! ```rust
+//! # #[macro_use] extern crate stub_macro;
+//! # fn main() {
+//! # fn assign() {
+//! let username = stub!(String);
+//! # }
+//! # }
+//! ```
 //!
 //! This allows you to specify just type of the variable and continue working on other code, then come back later and specify its value.
 //!

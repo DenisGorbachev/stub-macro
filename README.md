@@ -7,9 +7,11 @@
 [![Build](https://github.com/DenisGorbachev/stub-macro/actions/workflows/ci.yml/badge.svg)](https://github.com/DenisGorbachev/stub-macro)
 [![Documentation](https://docs.rs/stub-macro/badge.svg)](https://docs.rs/stub-macro)
 
-`stub!()` is a better version of `todo!()`
+`stub!()` can be assigned to a variable:
 
-`stub!()` can be assigned to a variable: `let username = stub!(String)`.
+```rust
+let username = stub!(String);
+```
 
 This allows you to specify just type of the variable and continue working on other code, then come back later and specify its value.
 
