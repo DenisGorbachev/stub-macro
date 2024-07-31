@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4](https://github.com/DenisGorbachev/stub-macro/compare/v0.1.3...v0.1.4) - 2024-07-31
+
+### Fixed
+- commitlint
+- commitlint
+
+### Other
+- allow more types in commitlint
+- install cargo-machete
+- add lint-deps
+- fix config
+- configure commitlint
+
 ## [0.1.3](https://github.com/DenisGorbachev/stub-macro/compare/v0.1.2...v0.1.3) - 2024-07-21
 
 ### Other
