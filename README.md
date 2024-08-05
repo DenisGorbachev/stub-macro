@@ -92,7 +92,7 @@ cargo add stub-macro
 
 ## Gratitude
 
-Like the project? [Say thanks!](https://github.com/DenisGorbachev/stub-macro/discussions/new?category=gratitude) ❤️
+Like the project? [⭐ Star this repo](https://github.com/DenisGorbachev/stub-macro) on GitHub!
 
 ## License
 
