@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7](https://github.com/DenisGorbachev/stub-macro/compare/v0.1.6...v0.1.7) - 2025-02-15
+
+### Fixed
+
+- README
+
 ## [0.1.5](https://github.com/DenisGorbachev/stub-macro/compare/v0.1.4...v0.1.5) - 2024-08-05
 
 ### Other
