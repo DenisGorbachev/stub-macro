@@ -2,19 +2,77 @@
   "version": "3",
   "packages": {
     "specifiers": {
+      "jsr:@dengorbachev/patchlift@0.1.4": "jsr:@dengorbachev/patchlift@0.1.4",
+      "jsr:@dengorbachev/patchlift@0.1.5": "jsr:@dengorbachev/patchlift@0.1.5",
       "jsr:@std/assert@1.0.0": "jsr:@std/assert@1.0.0",
+      "jsr:@std/assert@^0.224.0": "jsr:@std/assert@0.224.0",
+      "jsr:@std/bytes@^1.0.5": "jsr:@std/bytes@1.0.5",
+      "jsr:@std/fs@0.224.0": "jsr:@std/fs@0.224.0",
       "jsr:@std/internal@^1.0.1": "jsr:@std/internal@1.0.1",
-      "npm:zx": "npm:zx@8.1.4"
+      "jsr:@std/io@0.225.2": "jsr:@std/io@0.225.2",
+      "jsr:@std/path@0.224.0": "jsr:@std/path@0.224.0",
+      "jsr:@std/path@^0.224.0": "jsr:@std/path@0.224.0",
+      "npm:remeda@2.20.2": "npm:remeda@2.20.2",
+      "npm:zod@3.24.2": "npm:zod@3.24.2",
+      "npm:zx": "npm:zx@8.1.4",
+      "npm:zx@8.3.2": "npm:zx@8.3.2"
     },
     "jsr": {
+      "@dengorbachev/patchlift@0.1.4": {
+        "integrity": "98c2579d1985c4ad003d6aa072786ea89bc0d13d0994e3e90d5a1e89b61d71ed",
+        "dependencies": [
+          "jsr:@std/fs@0.224.0",
+          "jsr:@std/io@0.225.2",
+          "jsr:@std/path@0.224.0",
+          "npm:remeda@2.20.2",
+          "npm:zod@3.24.2",
+          "npm:zx@8.3.2"
+        ]
+      },
+      "@dengorbachev/patchlift@0.1.5": {
+        "integrity": "99ecf8f935436b74a7d3e8e7849b283830b50f555a7ad9a90fe75d73fda16e86",
+        "dependencies": [
+          "jsr:@std/fs@0.224.0",
+          "jsr:@std/io@0.225.2",
+          "jsr:@std/path@0.224.0",
+          "npm:remeda@2.20.2",
+          "npm:zod@3.24.2",
+          "npm:zx@8.3.2"
+        ]
+      },
+      "@std/assert@0.224.0": {
+        "integrity": "8643233ec7aec38a940a8264a6e3eed9bfa44e7a71cc6b3c8874213ff401967f"
+      },
       "@std/assert@1.0.0": {
         "integrity": "0e4f6d873f7f35e2a1e6194ceee39686c996b9e5d134948e644d35d4c4df2008",
         "dependencies": [
           "jsr:@std/internal@^1.0.1"
         ]
       },
+      "@std/bytes@1.0.5": {
+        "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
+      },
+      "@std/fs@0.224.0": {
+        "integrity": "52a5ec89731ac0ca8f971079339286f88c571a4d61686acf75833f03a89d8e69",
+        "dependencies": [
+          "jsr:@std/assert@^0.224.0",
+          "jsr:@std/path@^0.224.0"
+        ]
+      },
       "@std/internal@1.0.1": {
         "integrity": "6f8c7544d06a11dd256c8d6ba54b11ed870aac6c5aeafff499892662c57673e6"
+      },
+      "@std/io@0.225.2": {
+        "integrity": "3c740cd4ee4c082e6cfc86458f47e2ab7cb353dc6234d5e9b1f91a2de5f4d6c7",
+        "dependencies": [
+          "jsr:@std/bytes@^1.0.5"
+        ]
+      },
+      "@std/path@0.224.0": {
+        "integrity": "55bca6361e5a6d158b9380e82d4981d82d338ec587de02951e2b7c3a24910ee6",
+        "dependencies": [
+          "jsr:@std/assert@^0.224.0"
+        ]
       }
     },
     "npm": {
@@ -41,12 +99,33 @@
           "undici-types": "undici-types@5.25.3"
         }
       },
+      "remeda@2.20.2": {
+        "integrity": "sha512-38pfm5aUq6mUkNYbt7TdY2WEk9mSqRVV+6UsoTjabwmbu8obLbh8sYYSX2WQ3W4u6EYp3XxUKqIiwGFZu+OY9g==",
+        "dependencies": {
+          "type-fest": "type-fest@4.35.0"
+        }
+      },
+      "type-fest@4.35.0": {
+        "integrity": "sha512-2/AwEFQDFEy30iOLjrvHDIH7e4HEWH+f1Yl1bI5XMqzuoCUqwYCdxachgsgv0og/JdVZUhbfjcJAoHj5L1753A==",
+        "dependencies": {}
+      },
       "undici-types@5.25.3": {
         "integrity": "sha512-Ga1jfYwRn7+cP9v8auvEXN1rX3sWqlayd4HP7OKk4mZWylEmu3KzXDUGrQUN6Ol7qo1gPvB2e5gX6udnyEPgdA==",
         "dependencies": {}
       },
+      "zod@3.24.2": {
+        "integrity": "sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==",
+        "dependencies": {}
+      },
       "zx@8.1.4": {
         "integrity": "sha512-QFDYYpnzdpRiJ3dL2102Cw26FpXpWshW4QLTGxiYfIcwdAqg084jRCkK/kuP/NOSkxOjydRwNFG81qzA5r1a6w==",
+        "dependencies": {
+          "@types/fs-extra": "@types/fs-extra@11.0.4",
+          "@types/node": "@types/node@20.8.7"
+        }
+      },
+      "zx@8.3.2": {
+        "integrity": "sha512-qjTunv1NClO05jDaUjrNZfpqC9yvNCchge/bzOcQevsh1aM5qE3TG6MY24kuQKlOWx+7vNuhqO2wa9nQCIGvZA==",
         "dependencies": {
           "@types/fs-extra": "@types/fs-extra@11.0.4",
           "@types/node": "@types/node@20.8.7"
