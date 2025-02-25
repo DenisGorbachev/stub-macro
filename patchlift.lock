@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "rpcs": [
+    {
+      "repo": "https://github.com/DenisGorbachev/url-macro",
+      "path": "mise.toml",
+      "commit": "dcacccc7a2a3e8c8a22726060d31f652dcc71dd5"
+    },
+    {
+      "repo": "https://github.com/DenisGorbachev/url-macro",
+      "path": "lefthook.yml",
+      "commit": "dcacccc7a2a3e8c8a22726060d31f652dcc71dd5"
+    },
+    {
+      "repo": "https://github.com/DenisGorbachev/url-macro",
+      "path": "commitlint.config.mjs",
+      "commit": "dcacccc7a2a3e8c8a22726060d31f652dcc71dd5"
+    },
+    {
+      "repo": "https://github.com/DenisGorbachev/url-macro",
+      "path": "rustfmt.toml",
+      "commit": "dcacccc7a2a3e8c8a22726060d31f652dcc71dd5"
+    },
+    {
+      "repo": "https://github.com/DenisGorbachev/url-macro",
+      "path": "README.ts",
+      "commit": "dcacccc7a2a3e8c8a22726060d31f652dcc71dd5"
+    },
+    {
+      "repo": "https://github.com/DenisGorbachev/url-macro",
+      "path": "deno.json",
+      "commit": "dcacccc7a2a3e8c8a22726060d31f652dcc71dd5"
+    },
+    {
+      "repo": "https://github.com/DenisGorbachev/url-macro",
+      "path": ".github/workflows",
+      "commit": "dcacccc7a2a3e8c8a22726060d31f652dcc71dd5"
+    },
+    {
+      "repo": "https://github.com/DenisGorbachev/url-macro",
+      "path": "LICENSE-APACHE",
+      "commit": "dcacccc7a2a3e8c8a22726060d31f652dcc71dd5"
+    },
+    {
+      "repo": "https://github.com/DenisGorbachev/url-macro",
+      "path": "LICENSE-MIT",
+      "commit": "dcacccc7a2a3e8c8a22726060d31f652dcc71dd5"
+    }
+  ]
+}
