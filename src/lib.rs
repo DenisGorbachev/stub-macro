@@ -107,13 +107,11 @@ macro_rules! stub {
 }
 
 #[doc(hidden)]
-#[allow(clippy::let_unit_value)]
 pub fn _stub<T>() -> T {
     todo!()
 }
 
 #[doc(hidden)]
-#[allow(clippy::let_unit_value)]
 pub fn _stub_msg<T>(msg: &str) -> T {
     todo!("{msg}")
 }
