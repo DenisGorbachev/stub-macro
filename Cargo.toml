@@ -11,7 +11,7 @@ keywords = ["stub", "utils", "testing", "development"]
 categories = ["rust-patterns", "development-tools", "no-std", "no-std::no-alloc"]
 
 [package.metadata.details]
-title = "stub! - a better todo!"
+title = "stub!() - a better todo!()"
 tagline = ""
 summary = ""
 announcement = ""
