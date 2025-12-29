@@ -9,6 +9,22 @@ repository = "https://github.com/DenisGorbachev/stub-macro"
 readme = "README.md"
 keywords = ["stub", "utils", "testing", "development"]
 categories = ["rust-patterns", "development-tools", "no-std", "no-std::no-alloc"]
+exclude = [
+    ".*",
+    "*.local.*",
+    "doc/dev",
+    "specs",
+    "README.ts",
+    "AGENTS*.md",
+    "CLAUDE*.md",
+    "deno.json",
+    "commitlint.config.mjs",
+    "lefthook.yml",
+    "mise.toml",
+    "rumdl.toml",
+    "rustfmt.toml",
+    "yolobox"
+]
 
 [package.metadata.details]
 title = "stub!() - a better todo!()"
