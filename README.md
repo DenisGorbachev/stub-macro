@@ -71,14 +71,14 @@ fn implicit_type_example() -> u32 {
 }
 ```
 
-### Behavior
+## Behavior
 
 When a stub is invoked, it will panic like a `todo!()` macro.
 However, unlike a `todo!()` macro, it will not make the subsequent parts of your code unreachable.
 
 If a custom message is provided, it will be included in the panic message.
 
-### Notes
+## Notes
 
 - The `stub!()` macro is intended for use during development and should be
   replaced with actual implementations before production use.
