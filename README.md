@@ -4,6 +4,7 @@
 
 # stub!() - a better todo!()
 
+[![Build](https://github.com/DenisGorbachev/stub-macro/actions/workflows/ci.yml/badge.svg)](https://github.com/DenisGorbachev/stub-macro)
 [![Documentation](https://docs.rs/stub-macro/badge.svg)](https://docs.rs/stub-macro)
 
 <!-- crate documentation start -->
