@@ -15,6 +15,8 @@
 //!
 //! ```
 //! # #[macro_use] extern crate stub_macro;
+//! # #[cfg(feature = "futures")]
+//! # extern crate futures_core_0_3 as futures_core;
 //! # fn main() {
 //! fn assign() {
 //!     // you can assign stub!() to a variable
@@ -45,10 +47,22 @@
 //!     if status { println!("Success") }
 //! }
 //!
-//! fn impl_example() -> impl Iterator<Item=u32> {
+//! # #[cfg(feature = "alloc")]
+//! fn impl_example() -> impl core::fmt::Display {
 //!     // you can use stub!() in return position even with `impl Trait` return type
 //!     // note: `impl Trait` must be written as `impl dyn Trait` due to `macro_rules!` limitation
-//!     stub!(impl dyn Iterator<Item=u32>)
+//!     stub!(impl dyn core::fmt::Display)
+//! }
+//!
+//! fn iter_example() -> impl Iterator<Item = u32> {
+//!     // use stub_iter!() when the return type is an iterator
+//!     stub_iter!()
+//! }
+//!
+//! #[cfg(feature = "futures")]
+//! fn stream_example() -> impl futures_core::stream::Stream<Item = u32> {
+//!     // use stub_stream!() when the return type is a stream
+//!     stub_stream!()
 //! }
 //!
 //! fn explicit_type_with_message_example() -> u32 {
@@ -79,32 +93,93 @@
 //!
 //! ## Notes
 //!
-//! - The `stub!()` macro is intended for use during development and should be
-//!   replaced with actual implementations before production use.
+//! - `stub!()` macro is intended for use during development and should be replaced with actual implementations before production use.
 //! - When using `impl Trait` in return position, you must use `impl dyn Trait` in the macro invocation due to a limitation in `macro_rules!`
+//! - `stub!(impl dyn Trait)` requires the `alloc` feature.
+//! - `stub_stream!()` requires the `futures` feature.
 //!
 
 #![no_std]
+
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
+#[doc(hidden)]
+#[macro_export]
+#[cfg(feature = "alloc")]
+macro_rules! _stub_impl_dyn {
+    ($ty:ty) => {{
+        $crate::_stub_box::<$ty>()
+    }};
+}
+
+#[doc(hidden)]
+#[macro_export]
+#[cfg(not(feature = "alloc"))]
+macro_rules! _stub_impl_dyn {
+    ($ty:ty) => {{
+        compile_error!("stub!(impl dyn ...) requires the `alloc` feature")
+    }};
+}
 
 /// See the crate-level documentation for the overview of this macro
 #[macro_export]
 macro_rules! stub {
     (impl $ty:ty) => {{
-        $crate::_stub::<Box<$ty>>()
+        $crate::_stub_impl_dyn!($ty)
     }};
-    ($ty:ty, $msg:literal$(, $args:tt)*) => {{
-        $crate::_stub_msg::<$ty>(&format!($msg$(, $args)*))
+    ($ty:ty, $fmt:expr) => {{
+        $crate::_stub_msg::<$ty>(format_args!($fmt))
+    }};
+    ($ty:ty, $fmt:expr, $($args:tt)*) => {{
+        $crate::_stub_msg::<$ty>(format_args!($fmt, $($args)*))
     }};
     ($ty:ty) => {{
         $crate::_stub::<$ty>()
     }};
-    ($msg:literal$(, $args:tt)*) => {{
-        $crate::_stub_msg(&format!($msg$(, $args)*))
+    ($fmt:expr) => {{
+        $crate::_stub_msg(format_args!($fmt))
+    }};
+    ($fmt:expr, $($args:tt)*) => {{
+        $crate::_stub_msg(format_args!($fmt, $($args)*))
     }};
     () => {{
         $crate::_stub()
     }};
 }
+
+/// See the crate-level documentation for the overview of this macro
+#[macro_export]
+macro_rules! stub_iter {
+    () => {
+        $crate::_stub::<core::iter::Empty<_>>()
+    };
+    ($fmt:expr) => {
+        $crate::_stub_msg::<core::iter::Empty<_>>(format_args!($fmt))
+    };
+    ($fmt:expr, $($args:tt)*) => {
+        $crate::_stub_msg::<core::iter::Empty<_>>(format_args!($fmt, $($args)*))
+    };
+}
+
+/// See the crate-level documentation for the overview of this macro
+#[macro_export]
+#[cfg(feature = "futures")]
+macro_rules! stub_stream {
+    () => {
+        $crate::_stub::<$crate::_StubEmptyStream<_>>()
+    };
+    ($fmt:expr) => {
+        $crate::_stub_msg::<$crate::_StubEmptyStream<_>>(format_args!($fmt))
+    };
+    ($fmt:expr, $($args:tt)*) => {
+        $crate::_stub_msg::<$crate::_StubEmptyStream<_>>(format_args!($fmt, $($args)*))
+    };
+}
+
+#[doc(hidden)]
+#[cfg(feature = "futures")]
+pub use futures_util_0_3::stream::Empty as _StubEmptyStream;
 
 #[doc(hidden)]
 pub fn _stub<T>() -> T {
@@ -112,7 +187,13 @@ pub fn _stub<T>() -> T {
 }
 
 #[doc(hidden)]
-pub fn _stub_msg<T>(msg: &str) -> T {
+#[cfg(feature = "alloc")]
+pub fn _stub_box<T: ?Sized>() -> alloc::boxed::Box<T> {
+    _stub::<alloc::boxed::Box<T>>()
+}
+
+#[doc(hidden)]
+pub fn _stub_msg<T>(msg: core::fmt::Arguments<'_>) -> T {
     todo!("{msg}")
 }
 
@@ -122,5 +203,130 @@ mod tests {
     #[should_panic]
     fn test_panic() {
         stub!()
+    }
+
+    #[test]
+    #[should_panic(expected = "Assigned to: John")]
+    fn test_panic_msg() {
+        let _: u32 = stub!(u32, "Assigned to: {}", "John");
+    }
+
+    #[cfg(feature = "alloc")]
+    #[test]
+    #[should_panic(expected = "Assigned to: x")]
+    fn test_panic_msg_with_path_expression() {
+        let _: u32 = stub!(u32, "Assigned to: {}", alloc::string::String::from("x"));
+    }
+
+    #[test]
+    #[should_panic(expected = "Assigned to: John")]
+    fn test_panic_msg_with_format_expression() {
+        let _: u32 = stub!(u32, concat!("Assigned to: ", "{}"), "John");
+    }
+
+    #[test]
+    #[should_panic(expected = "Assigned to: John")]
+    fn test_panic_msg_with_named_argument() {
+        let name = "John";
+        let _: u32 = stub!(u32, "Assigned to: {name}", name = name);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_panic_iter() {
+        fn iter() -> impl Iterator<Item = u32> {
+            stub_iter!()
+        }
+        let _ = iter();
+    }
+
+    #[cfg(feature = "alloc")]
+    #[test]
+    #[should_panic(expected = "Assigned to: x")]
+    fn test_panic_iter_with_path_expression() {
+        fn iter() -> impl Iterator<Item = u32> {
+            stub_iter!("Assigned to: {}", alloc::string::String::from("x"))
+        }
+        let _ = iter();
+    }
+
+    #[test]
+    #[should_panic(expected = "Assigned to: John")]
+    fn test_panic_iter_with_format_expression() {
+        fn iter() -> impl Iterator<Item = u32> {
+            stub_iter!(concat!("Assigned to: ", "{}"), "John")
+        }
+        let _ = iter();
+    }
+
+    #[test]
+    #[should_panic(expected = "Assigned to: John")]
+    fn test_panic_iter_with_named_argument() {
+        fn iter() -> impl Iterator<Item = u32> {
+            let name = "John";
+            stub_iter!("Assigned to: {name}", name = name)
+        }
+        let _ = iter();
+    }
+
+    #[cfg(feature = "alloc")]
+    #[test]
+    #[should_panic]
+    fn test_panic_dyn_display() {
+        fn display() -> impl core::fmt::Display {
+            stub!(impl dyn core::fmt::Display)
+        }
+        let _ = display();
+    }
+
+    #[cfg(feature = "alloc")]
+    #[test]
+    #[should_panic]
+    fn test_panic_dyn_iter() {
+        fn iter() -> impl Iterator<Item = u32> {
+            stub!(impl dyn Iterator<Item = u32>)
+        }
+        let _ = iter();
+    }
+
+    #[cfg(feature = "futures")]
+    #[test]
+    #[should_panic]
+    fn test_panic_stream() {
+        fn stream() -> impl futures_core_0_3::stream::Stream<Item = u32> {
+            stub_stream!()
+        }
+        let _ = stream();
+    }
+
+    #[cfg(all(feature = "alloc", feature = "futures"))]
+    #[test]
+    #[should_panic(expected = "Assigned to: x")]
+    fn test_panic_stream_with_path_expression() {
+        fn stream() -> impl futures_core_0_3::stream::Stream<Item = u32> {
+            stub_stream!("Assigned to: {}", alloc::string::String::from("x"))
+        }
+        let _ = stream();
+    }
+
+    #[cfg(feature = "futures")]
+    #[test]
+    #[should_panic(expected = "Assigned to: John")]
+    fn test_panic_stream_with_format_expression() {
+        fn stream() -> impl futures_core_0_3::stream::Stream<Item = u32> {
+            stub_stream!(concat!("Assigned to: ", "{}"), "John")
+        }
+        let _ = stream();
+    }
+
+    #[cfg(feature = "futures")]
+    #[test]
+    #[should_panic(expected = "Assigned to: John")]
+    fn test_panic_stream_with_named_argument() {
+        fn stream() -> impl futures_core_0_3::stream::Stream<Item = u32> {
+            let name = "John";
+            stub_stream!("Assigned to: {name}", name = name)
+        }
+        let _ = stream();
     }
 }

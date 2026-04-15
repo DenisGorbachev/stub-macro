@@ -48,10 +48,21 @@ fn custom_message() {
     if status { println!("Success") }
 }
 
-fn impl_example() -> impl Iterator<Item=u32> {
+fn impl_example() -> impl core::fmt::Display {
     // you can use stub!() in return position even with `impl Trait` return type
     // note: `impl Trait` must be written as `impl dyn Trait` due to `macro_rules!` limitation
-    stub!(impl dyn Iterator<Item=u32>)
+    stub!(impl dyn core::fmt::Display)
+}
+
+fn iter_example() -> impl Iterator<Item = u32> {
+    // use stub_iter!() when the return type is an iterator
+    stub_iter!()
+}
+
+#[cfg(feature = "futures")]
+fn stream_example() -> impl futures_core::stream::Stream<Item = u32> {
+    // use stub_stream!() when the return type is a stream
+    stub_stream!()
 }
 
 fn explicit_type_with_message_example() -> u32 {
@@ -81,9 +92,10 @@ If a custom message is provided, it will be included in the panic message.
 
 ## Notes
 
-- The `stub!()` macro is intended for use during development and should be
-  replaced with actual implementations before production use.
+- `stub!()` macro is intended for use during development and should be replaced with actual implementations before production use.
 - When using `impl Trait` in return position, you must use `impl dyn Trait` in the macro invocation due to a limitation in `macro_rules!`
+- `stub!(impl dyn Trait)` requires the `alloc` feature.
+- `stub_stream!()` requires the `futures` feature.
 
 <!-- crate documentation end -->
 
