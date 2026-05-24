@@ -99,6 +99,8 @@
 //! - `stub_stream!()` requires the `futures` feature.
 //!
 
+#![deny(clippy::arithmetic_side_effects)]
+#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 #![no_std]
 
 #[cfg(feature = "alloc")]

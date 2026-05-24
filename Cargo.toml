@@ -3,6 +3,7 @@ name = "stub-macro"
 description = "stub!() is a better version of todo!() that can be assigned to a variable"
 version = "0.3.0"
 edition = "2021"
+rust-version = "1.85.0"
 license = "Apache-2.0 OR MIT"
 homepage = "https://github.com/DenisGorbachev/stub-macro"
 repository = "https://github.com/DenisGorbachev/stub-macro"
@@ -23,7 +24,7 @@ exclude = [
     "mise.toml",
     "rumdl.toml",
     "rustfmt.toml",
-    "yolobox"
+    ".yolobox"
 ]
 
 [package.metadata.details]
@@ -33,10 +34,12 @@ summary = ""
 announcement = ""
 
 [dependencies]
-futures-core-0-3 = { version = "0.3", package = "futures-core", optional = true, default-features = false }
 futures-util-0-3 = { version = "0.3", package = "futures-util", optional = true, default-features = false }
+
+[dev-dependencies]
+futures-core-0-3 = { version = "0.3", package = "futures-core", default-features = false }
 
 [features]
 default = ["alloc"]
 alloc = []
-futures = ["dep:futures-core-0-3", "dep:futures-util-0-3"]
+futures = ["dep:futures-util-0-3"]
