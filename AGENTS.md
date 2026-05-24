@@ -607,6 +607,12 @@ macro_rules! _stub_impl_dyn {
     ($ty:ty) => {{
         $crate::_stub_box::<$ty>()
     }};
+    ($ty:ty, $fmt:expr) => {{
+        $crate::_stub_box_msg::<$ty>(::core::format_args!($fmt))
+    }};
+    ($ty:ty, $fmt:expr, $($args:tt)*) => {{
+        $crate::_stub_box_msg::<$ty>(::core::format_args!($fmt, $($args)*))
+    }};
 }
 
 #[doc(hidden)]
@@ -616,28 +622,40 @@ macro_rules! _stub_impl_dyn {
     ($ty:ty) => {{
         compile_error!("stub!(impl dyn ...) requires the `alloc` feature")
     }};
+    ($ty:ty, $fmt:expr) => {{
+        compile_error!("stub!(impl dyn ...) requires the `alloc` feature")
+    }};
+    ($ty:ty, $fmt:expr, $($args:tt)*) => {{
+        compile_error!("stub!(impl dyn ...) requires the `alloc` feature")
+    }};
 }
 
 /// See the crate-level documentation for the overview of this macro
 #[macro_export]
 macro_rules! stub {
+    (impl $ty:ty, $fmt:expr) => {{
+        $crate::_stub_impl_dyn!($ty, $fmt)
+    }};
+    (impl $ty:ty, $fmt:expr, $($args:tt)*) => {{
+        $crate::_stub_impl_dyn!($ty, $fmt, $($args)*)
+    }};
     (impl $ty:ty) => {{
         $crate::_stub_impl_dyn!($ty)
     }};
     ($ty:ty, $fmt:expr) => {{
-        $crate::_stub_msg::<$ty>(format_args!($fmt))
+        $crate::_stub_msg::<$ty>(::core::format_args!($fmt))
     }};
     ($ty:ty, $fmt:expr, $($args:tt)*) => {{
-        $crate::_stub_msg::<$ty>(format_args!($fmt, $($args)*))
+        $crate::_stub_msg::<$ty>(::core::format_args!($fmt, $($args)*))
     }};
     ($ty:ty) => {{
         $crate::_stub::<$ty>()
     }};
     ($fmt:expr) => {{
-        $crate::_stub_msg(format_args!($fmt))
+        $crate::_stub_msg(::core::format_args!($fmt))
     }};
     ($fmt:expr, $($args:tt)*) => {{
-        $crate::_stub_msg(format_args!($fmt, $($args)*))
+        $crate::_stub_msg(::core::format_args!($fmt, $($args)*))
     }};
     () => {{
         $crate::_stub()
@@ -648,13 +666,13 @@ macro_rules! stub {
 #[macro_export]
 macro_rules! stub_iter {
     () => {
-        $crate::_stub::<core::iter::Empty<_>>()
+        $crate::_stub::<::core::iter::Empty<_>>()
     };
     ($fmt:expr) => {
-        $crate::_stub_msg::<core::iter::Empty<_>>(format_args!($fmt))
+        $crate::_stub_msg::<::core::iter::Empty<_>>(::core::format_args!($fmt))
     };
     ($fmt:expr, $($args:tt)*) => {
-        $crate::_stub_msg::<core::iter::Empty<_>>(format_args!($fmt, $($args)*))
+        $crate::_stub_msg::<::core::iter::Empty<_>>(::core::format_args!($fmt, $($args)*))
     };
 }
 
@@ -666,10 +684,10 @@ macro_rules! stub_stream {
         $crate::_stub::<$crate::_StubEmptyStream<_>>()
     };
     ($fmt:expr) => {
-        $crate::_stub_msg::<$crate::_StubEmptyStream<_>>(format_args!($fmt))
+        $crate::_stub_msg::<$crate::_StubEmptyStream<_>>(::core::format_args!($fmt))
     };
     ($fmt:expr, $($args:tt)*) => {
-        $crate::_stub_msg::<$crate::_StubEmptyStream<_>>(format_args!($fmt, $($args)*))
+        $crate::_stub_msg::<$crate::_StubEmptyStream<_>>(::core::format_args!($fmt, $($args)*))
     };
 }
 
@@ -686,6 +704,12 @@ pub fn _stub<T>() -> T {
 #[cfg(feature = "alloc")]
 pub fn _stub_box<T: ?Sized>() -> alloc::boxed::Box<T> {
     _stub::<alloc::boxed::Box<T>>()
+}
+
+#[doc(hidden)]
+#[cfg(feature = "alloc")]
+pub fn _stub_box_msg<T: ?Sized>(msg: core::fmt::Arguments<'_>) -> alloc::boxed::Box<T> {
+    _stub_msg::<alloc::boxed::Box<T>>(msg)
 }
 
 #[doc(hidden)]
