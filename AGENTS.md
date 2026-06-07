@@ -441,7 +441,7 @@ You are running in a sandbox with limited network access.
 [package]
 name = "stub-macro"
 description = "stub!() is a better version of todo!() that can be assigned to a variable"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 rust-version = "1.85.0"
 license = "Apache-2.0 OR MIT"
@@ -496,8 +496,8 @@ futures = ["dep:futures-util-0-3"]
 if_missing = "error"
 
 [providers]
-keychain = { type = "keychain", service = "rust-public-lib-template" }
-pass = { type = "password-store", prefix = "rust-public-lib-template/" }
+keychain = { type = "keychain", service = "stub-macro" }
+pass = { type = "password-store", prefix = "stub-macro/" }
 ```
 
 ### src/lib.rs
