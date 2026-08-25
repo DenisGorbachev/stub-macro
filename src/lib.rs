@@ -99,12 +99,15 @@
 //! - `stub_stream!()` requires the `futures` feature.
 //!
 
-#![deny(clippy::arithmetic_side_effects)]
 #![cfg_attr(not(test), deny(unused_crate_dependencies))]
 #![no_std]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
+
+#[cfg(feature = "alloc")]
+use alloc::boxed::Box;
+use core::fmt::Arguments;
 
 #[doc(hidden)]
 #[macro_export]
@@ -208,23 +211,30 @@ pub fn _stub<T>() -> T {
 
 #[doc(hidden)]
 #[cfg(feature = "alloc")]
-pub fn _stub_box<T: ?Sized>() -> alloc::boxed::Box<T> {
-    _stub::<alloc::boxed::Box<T>>()
+pub fn _stub_box<T: ?Sized>() -> Box<T> {
+    _stub::<Box<T>>()
 }
 
 #[doc(hidden)]
 #[cfg(feature = "alloc")]
-pub fn _stub_box_msg<T: ?Sized>(msg: core::fmt::Arguments<'_>) -> alloc::boxed::Box<T> {
-    _stub_msg::<alloc::boxed::Box<T>>(msg)
+pub fn _stub_box_msg<T: ?Sized>(msg: Arguments<'_>) -> Box<T> {
+    _stub_msg::<Box<T>>(msg)
 }
 
 #[doc(hidden)]
-pub fn _stub_msg<T>(msg: core::fmt::Arguments<'_>) -> T {
+pub fn _stub_msg<T>(msg: Arguments<'_>) -> T {
     todo!("{msg}")
 }
 
 #[cfg(test)]
 mod tests {
+    #[cfg(feature = "alloc")]
+    use alloc::string::String;
+    #[cfg(feature = "alloc")]
+    use core::fmt::Display;
+    #[cfg(feature = "futures")]
+    use futures_core_0_3::stream::Stream;
+
     #[test]
     #[should_panic]
     fn test_panic() {
@@ -241,7 +251,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "Assigned to: x")]
     fn test_panic_msg_with_path_expression() {
-        let _: u32 = stub!(u32, "Assigned to: {}", alloc::string::String::from("x"));
+        let _: u32 = stub!(u32, "Assigned to: {}", String::from("x"));
     }
 
     #[test]
@@ -271,7 +281,7 @@ mod tests {
     #[should_panic(expected = "Assigned to: x")]
     fn test_panic_iter_with_path_expression() {
         fn iter() -> impl Iterator<Item = u32> {
-            stub_iter!("Assigned to: {}", alloc::string::String::from("x"))
+            stub_iter!("Assigned to: {}", String::from("x"))
         }
         let _ = iter();
     }
@@ -299,8 +309,8 @@ mod tests {
     #[test]
     #[should_panic]
     fn test_panic_dyn_display() {
-        fn display() -> impl core::fmt::Display {
-            stub!(impl dyn core::fmt::Display)
+        fn display() -> impl Display {
+            stub!(impl dyn Display)
         }
         let _ = display();
     }
@@ -319,7 +329,7 @@ mod tests {
     #[test]
     #[should_panic]
     fn test_panic_stream() {
-        fn stream() -> impl futures_core_0_3::stream::Stream<Item = u32> {
+        fn stream() -> impl Stream<Item = u32> {
             stub_stream!()
         }
         let _ = stream();
@@ -329,8 +339,8 @@ mod tests {
     #[test]
     #[should_panic(expected = "Assigned to: x")]
     fn test_panic_stream_with_path_expression() {
-        fn stream() -> impl futures_core_0_3::stream::Stream<Item = u32> {
-            stub_stream!("Assigned to: {}", alloc::string::String::from("x"))
+        fn stream() -> impl Stream<Item = u32> {
+            stub_stream!("Assigned to: {}", String::from("x"))
         }
         let _ = stream();
     }
@@ -339,7 +349,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "Assigned to: John")]
     fn test_panic_stream_with_format_expression() {
-        fn stream() -> impl futures_core_0_3::stream::Stream<Item = u32> {
+        fn stream() -> impl Stream<Item = u32> {
             stub_stream!(concat!("Assigned to: ", "{}"), "John")
         }
         let _ = stream();
@@ -349,7 +359,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "Assigned to: John")]
     fn test_panic_stream_with_named_argument() {
-        fn stream() -> impl futures_core_0_3::stream::Stream<Item = u32> {
+        fn stream() -> impl Stream<Item = u32> {
             let name = "John";
             stub_stream!("Assigned to: {name}", name = name)
         }

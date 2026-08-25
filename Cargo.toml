@@ -1,13 +1,13 @@
-[package]
-name = "stub-macro"
-description = "stub!() is a better version of todo!() that can be assigned to a variable"
+[workspace]
+resolver = "3"
+
+[workspace.package]
 version = "0.3.1"
 edition = "2021"
 rust-version = "1.85.0"
 license = "Apache-2.0 OR MIT"
 homepage = "https://github.com/DenisGorbachev/stub-macro"
 repository = "https://github.com/DenisGorbachev/stub-macro"
-readme = "README.md"
 keywords = ["stub", "utils", "testing", "development"]
 categories = ["rust-patterns", "development-tools", "no-std", "no-std::no-alloc"]
 exclude = [
@@ -16,6 +16,7 @@ exclude = [
     "doc/dev",
     "specs",
     "AGENTS.ts",
+    "CargoMetadata.ts",
     "README.ts",
     "AGENTS*.md",
     "CLAUDE*.md",
@@ -23,18 +24,45 @@ exclude = [
     "deno.json",
     "commitlint.config.mjs",
     "fnox.toml",
-    "lefthook.yml",
     "mise.toml",
     "rumdl.toml",
     "rustfmt.toml",
     ".yolobox"
 ]
 
+[workspace.metadata.details]
+name = "stub-macro"
+title = "stub!() - a better todo!()"
+readme = { generate = false }
+
+[workspace.lints.rust]
+redundant_imports = "deny"
+unused_import_braces = "deny"
+# unused_qualifications must not be "deny" because our code style has multiple `use Foo::*;`, and some macros (derive_more::Display, strum::Display, strum::EnumString) produce code with full qualifications
+# unused_qualifications = "deny"
+
+[workspace.lints.clippy]
+absolute_paths = "deny"
+arithmetic_side_effects = "deny"
+
+[package]
+name = "stub-macro"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "stub!() is a better version of todo!() that can be assigned to a variable"
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+exclude.workspace = true
+
 [package.metadata.details]
 title = "stub!() - a better todo!()"
-tagline = ""
-summary = ""
-announcement = ""
+
+[lints]
+workspace = true
 
 [dependencies]
 futures-util-0-3 = { version = "0.3", package = "futures-util", optional = true, default-features = false }

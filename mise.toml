@@ -1,152 +1,144 @@
-min_version = "2026.4.8"
+min_version = "2026.7.13"
 
 [settings]
 idiomatic_version_file_enable_tools = ["rust"]
-
-[plugins]
-fnox-env = "https://github.com/jdx/mise-env-fnox"
+task.output = "keep-order"
 
 [tools]
 node = "24.15.0"
 deno = "1.46.1"
-fnox = "1.21.0"
+fnox = "1.33.1"
 cargo-binstall = "1.10.15"
-"npm:lefthook" = "1.8.5"
 "npm:@commitlint/config-conventional" = "19.6.0"
 "npm:@commitlint/cli" = "19.6.0"
 "npm:@commitlint/types" = "19.5.0"
-"npm:repomix" = "1.5.0"
 "cargo:cargo-insert-docs" = "1.6.0"
 "cargo:cargo-hack" = "0.6.33"
 "cargo:cargo-nextest" = "0.9.102"
 "cargo:cargo-expand" = "1.0.114"
+"cargo:taplo-cli" = "0.10.0"
 "cargo:rumdl" = "0.1.0"
+"cargo:sd" = "1.0.0"
 
-[env]
-_.fnox-env = { tools = true }
+[hooks]
+postinstall = { task = "git:install-hooks" }
 
 [tasks."build"]
 run = "cargo build --workspace"
 
-[tasks."lint"]
-depends = ["lint:code", "lint:docs"]
-
-[tasks."lint:code"]
-run = "cargo clippy --workspace --all-targets --all-features -- -D warnings"
-
-[tasks."lint:docs"]
-run = "rumdl check"
+[tasks."check"]
+depends = ["cargo:validate-config"]
+run = [{ tasks = ["lint", "test"] }]
 
 [tasks."test"]
 depends = ["test:code", "test:docs"]
 
+[tasks."lint"]
+depends = ["lint:name", "lint:configs", "lint:code", "lint:code:style", "lint:docs", "lint:reports"]
+
+[tasks."lint:name"]
+run = [{ task = "fix:name", args = ["--check"] }]
+
+[tasks."lint:configs"]
+depends = ["lint:configs:cargo", "lint:configs:fnox"]
+
+[tasks."lint:configs:cargo"]
+run = [{ task = "fix:cargo", args = ["--check"] }]
+
+[tasks."lint:configs:fnox"]
+run = [{ task = "fix:fnox" }]
+
+[tasks."lint:code"]
+run = "cargo clippy --locked --workspace --all-targets --all-features -- -D warnings"
+
+[tasks."lint:code:style"]
+run = "cargo fmt --all -- --check"
+
+[tasks."lint:docs"]
+run = "rumdl check"
+
 [tasks."test:code"]
-run = "cargo nextest run --workspace --all-features --no-tests warn"
+run = "fnox --profile test exec --replace -- cargo nextest run --locked --workspace --all-features --no-tests warn"
 
 [tasks."test:code:integration"]
 # see also: "agent:test:code:integration"
 # `--test-threads 1` because integration tests must be run sequentially
-run = "mise run test:code -- --ignore-default-filter --max-fail 1 --test-threads 1 'integration_tests::'"
+run = [{ task = "test:code", args = ["--ignore-default-filter", "--max-fail", "1", "--test-threads", "1", "integration_tests::"] }]
 
 [tasks."test:code:slow"]
 # see also: "agent:test:code:slow"
 # `--test-threads` is omitted because slow tests may be run in parallel
-run = "mise run test:code -- --ignore-default-filter --max-fail 1 'slow_tests::'"
+run = [{ task = "test:code", args = ["--ignore-default-filter", "--max-fail", "1", "slow_tests::"] }]
 
 [tasks."test:docs"]
-run = "cargo test --workspace --doc --all-features --no-fail-fast --quiet"
+env = { RUSTDOCFLAGS = "-D warnings" }
+run = "cargo test --locked --workspace --doc --all-features --no-fail-fast --quiet"
+
+[tasks."pre-commit"]
+alias = "pre-merge-commit"
+run = [{ task = "git:validate-commit" }]
+
+# Compatibility for existing clones whose generated post-commit hook still invokes this task. The installer removes that hook during this one-time migration.
+[tasks."post-commit"]
+hide = true
+run = [{ task = "git:install-hooks" }]
+
+[tasks."commit-msg"]
+run = 'mise run --output interleave commitlint -- --edit "$@"'
 
 [tasks."fix"]
-# run the tasks in parallel because they modify different files
-depends = ["fix:code", "fix:docs", "fix:agents"]
+depends = ["fix:code", "fix:aux"]
+
+[tasks."fix:aux"]
+depends = ["fix:configs", "fix:docs", "fix:agents", "fix:readme"]
+
+[tasks."fix:configs"]
+depends = ["fix:cargo", "fix:fnox"]
 
 [tasks."fix:code"]
-# run the tasks sequentially because they modify the same files
-run = """
-mise run fix:code:warnings
-mise run fix:code:style
-"""
+depends = ["fix:name", "fix:code:style"]
 
 [tasks."fix:code:warnings"]
+depends = ["fix:cargo"]
 # second pass is needed because "cargo clippy --fix" exits with 0 even if some warnings remain
 env = { __CARGO_FIX_YOLO = 'yeah' }
-run = """
-cargo clippy --workspace --all-targets --all-features --fix --allow-dirty --allow-staged
-cargo clippy --workspace --all-targets --all-features -- -D warnings
-"""
+run = [
+    "cargo clippy --workspace --all-targets --all-features --fix --allow-dirty --allow-staged",
+    { task = "lint:code" },
+]
 
 [tasks."fix:code:style"]
+# Run after `fix:code:warnings` because both tasks modify the same code files.
+depends = ["fix:code:warnings"]
 run = "cargo fmt --all"
 
 [tasks."fix:docs"]
-# `rumdl check --fix` may modify any file, so we need to stage all markdown files.
+depends = ["fix:agents", "fix:readme"]
 # use `rumdl check --fix` instead of `rumdl fmt` because `rumdl check --fix` exits with 1 if errors remain (since v0.1.0)
-# use a quoted git pathspec so ignored files (e.g. `*.local.md`) don't fail the task.
-run = """
-rumdl check --fix
-git add -- '*.md'
-"""
+run = "rumdl check --fix"
 
 [tasks."fix:agents"]
-run = """
-#!/usr/bin/env bash
-set -euo pipefail
-mise run gen:agents
-if [ -f AGENTS.md ]; then
-  # add AGENTS.md manually because it may not have been staged
-  git add AGENTS.md
-fi
-"""
-
-[tasks."watch"]
-run = """
-#!/usr/bin/env bash
-set -euo pipefail
-PWD=$(pwd)
-CMD_RAW="nextest run $*"
-CMD_NO_WHITESPACE="$(echo -e "${CMD_RAW}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-cargo watch --clear --watch "$PWD" --exec "$CMD_NO_WHITESPACE" "$@"
-"""
+# "fix:agents" depends on "fix:code" because it reads the code files
+depends = ["fix:name", "fix:configs", "fix:code"]
+run = [{ task = "gen:agents" }]
 
 [tasks."gen:readme"]
-run = "touch README.md && chmod 0644 README.md && ./README.ts --output README.md"
+run = "./README.ts"
 
 [tasks."gen:agents"]
-run = "touch AGENTS.md && chmod 0644 AGENTS.md && ./AGENTS.ts --output AGENTS.md"
+run = "./AGENTS.ts"
 
 [tasks."commitlint"]
-run = "commitlint --extends \"$(mise where npm:@commitlint/config-conventional)/lib/node_modules/@commitlint/config-conventional/lib/index.js\""
-
-[tasks."repomix"]
-usage = """
-arg "<file>"
-arg "[rest]" var=#true
-"""
-run = """
-#!/usr/bin/env bash
-set -xeuo pipefail
-dir=$MISE_PROJECT_ROOT
-file=$usage_file
-header=$(taplo get -f "$dir/Cargo.toml" "package.description")
-# `--no-git-sort-by-changes` stabilizes file order across invocations
-repomix \
-    --include src,tests,examples \
-    --no-file-summary \
-    --no-directory-structure \
-    --no-git-sort-by-changes \
-    --header-text "$header" \
-    --output "$file" \
-    {{arg(name="rest")}} \
-    "$@" \
-    $dir
-"""
+run = "commitlint --extends \"$(mise where npm:@commitlint/config-conventional)/node_modules/@commitlint/config-conventional/lib/index.js\""
 
 [tasks."agent:docs:list"]
 run = "[ -d .agents/docs ] && find .agents/docs -type f -print || true"
+output = "interleave"
 quiet = true
 
 [tasks."agent:on:stop"]
-depends = ["fix", "agent:test"]
+depends = ["cargo:validate-config"]
+run = [{ task = "fix" }, { task = "agent:test" }]
 
 [tasks."agent:test"]
 depends = ["agent:test:code", "agent:test:code:integration", "agent:test:code:slow", "test:docs"]
@@ -154,14 +146,14 @@ depends = ["agent:test:code", "agent:test:code:integration", "agent:test:code:sl
 [tasks."agent:test:code"]
 # don't include `--fail-fast` because it's better to let the agent see all failures
 # reduce output to save tokens
-run = "mise run test:code -- --cargo-quiet --hide-progress-bar --status-level fail --final-status-level flaky"
+run = [{ task = "test:code", args = ["--cargo-quiet", "--hide-progress-bar", "--status-level", "fail", "--final-status-level", "flaky"] }]
 
 [tasks."agent:test:code:integration"]
 # see also: "test:code:integration"
 # `--test-threads 1` because integration tests must be run sequentially
-run = "mise run agent:test:code -- --ignore-default-filter --max-fail 1 --test-threads 1 'integration_tests::'"
+run = [{ task = "test:code", args = ["--cargo-quiet", "--hide-progress-bar", "--status-level", "fail", "--final-status-level", "flaky", "--ignore-default-filter", "--max-fail", "1", "--test-threads", "1", "integration_tests::"] }]
 
 [tasks."agent:test:code:slow"]
 # see also: "test:code:slow"
 # `--test-threads` is omitted because slow tests may be run in parallel
-run = "mise run agent:test:code -- --ignore-default-filter --max-fail 1 'slow_tests::'"
+run = [{ task = "test:code", args = ["--cargo-quiet", "--hide-progress-bar", "--status-level", "fail", "--final-status-level", "flaky", "--ignore-default-filter", "--max-fail", "1", "slow_tests::"] }]
