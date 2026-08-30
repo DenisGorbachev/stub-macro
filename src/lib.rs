@@ -139,7 +139,7 @@ macro_rules! _stub_impl_dyn {
     }};
 }
 
-/// See the crate-level documentation for the overview of this macro
+/// See the crate-level documentation for the overview of this macro.
 #[macro_export]
 macro_rules! stub {
     (impl $ty:ty, $fmt:expr) => {{
@@ -171,7 +171,7 @@ macro_rules! stub {
     }};
 }
 
-/// See the crate-level documentation for the overview of this macro
+/// See the crate-level documentation for the overview of this macro.
 #[macro_export]
 macro_rules! stub_iter {
     () => {
@@ -185,7 +185,7 @@ macro_rules! stub_iter {
     };
 }
 
-/// See the crate-level documentation for the overview of this macro
+/// See the crate-level documentation for the overview of this macro.
 #[macro_export]
 #[cfg(feature = "futures")]
 macro_rules! stub_stream {

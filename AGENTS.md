@@ -498,6 +498,16 @@ Notes:
 
 - Should match the thread topic
 
+#### Chat thread id heading
+
+A Markdown heading level 3 that contains only [chat thread id](#chat-thread-id).
+
+Examples:
+
+- `### RVC`
+- `### AKE`
+- `### LMY`
+
 #### findings.md
 
 - If it exists:
@@ -516,6 +526,19 @@ Notes:
     - If there is at least one proposed fix:
       - Then: "\n\n" and a Markdown nested list of fixes where each fix must have a format `{number}. {description}` (the numbers should start from 1 for each list of fixes)
       - Else: the exact text "none."
+
+#### Publishable package
+
+A package that has a remote whose name contains `public` or `pre-public` and ends with `template`.
+
+### Project info
+
+#### `git remote`
+
+```shell
+origin
+repoconf-rust-public-lib-template
+```
 
 ### Project files
 
@@ -925,7 +948,7 @@ macro_rules! _stub_impl_dyn {
     }};
 }
 
-/// See the crate-level documentation for the overview of this macro
+/// See the crate-level documentation for the overview of this macro.
 #[macro_export]
 macro_rules! stub {
     (impl $ty:ty, $fmt:expr) => {{
@@ -957,7 +980,7 @@ macro_rules! stub {
     }};
 }
 
-/// See the crate-level documentation for the overview of this macro
+/// See the crate-level documentation for the overview of this macro.
 #[macro_export]
 macro_rules! stub_iter {
     () => {
@@ -971,7 +994,7 @@ macro_rules! stub_iter {
     };
 }
 
-/// See the crate-level documentation for the overview of this macro
+/// See the crate-level documentation for the overview of this macro.
 #[macro_export]
 #[cfg(feature = "futures")]
 macro_rules! stub_stream {
