@@ -83,6 +83,20 @@ fn implicit_type_example() -> u32 {
 }
 ```
 
+## Stub functions with unused parameters
+
+Use `stub_use!` to mark parameters or local variables as used before panicking:
+
+```rust
+fn authenticate(username: &str, password: &str) -> bool {
+    let attempts = 0;
+    let authenticated = stub_use!(username, password, attempts);
+    authenticated
+}
+```
+
+It accepts one or more comma-separated variable names and requires no optional features.
+
 ## Behavior
 
 When a stub is invoked, it will panic like a `todo!()` macro.

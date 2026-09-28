@@ -84,6 +84,21 @@
 //! # }
 //! ```
 //!
+//! ## Mark unused variables as used
+//!
+//! Use `stub_use!` to mark variables as used:
+//!
+//! ```should_panic
+//! # #![deny(unreachable_code, unused_variables)]
+//! # use stub_macro::stub_use;
+//! fn authenticate(username: &str, password: &str) -> bool {
+//!     let attempts = 0;
+//!     let authenticated = stub_use!(username, password, attempts);
+//!     authenticated
+//! }
+//! # authenticate("alice", "secret");
+//! ```
+//!
 //! ## Behavior
 //!
 //! When a stub is invoked, it will panic like a `todo!()` macro.
@@ -203,6 +218,15 @@ macro_rules! stub_stream {
 #[doc(hidden)]
 #[cfg(feature = "futures")]
 pub use futures_util_0_3::stream::Empty as _StubEmptyStream;
+
+/// Marks one or more variable names as used, then panics with `todo!()`.
+#[macro_export]
+macro_rules! stub_use {
+    ($($name:ident),+ $(,)?) => {{
+        $(let _ = $name;)+
+        $crate::_stub()
+    }};
+}
 
 #[doc(hidden)]
 pub fn _stub<T>() -> T {
