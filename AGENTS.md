@@ -740,6 +740,9 @@ name = "rust-public-lib-template"
 title = "Rust public library template"
 readme = { generate = false }
 
+[workspace.lints.cargo]
+unused_dependencies = "deny"
+
 [workspace.lints.rust]
 redundant_imports = "deny"
 unused_import_braces = "deny"
@@ -784,6 +787,4 @@ workspace = true
 
 ```rust
 //! This is a module-level comment for a Rust lib
-
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 ```
