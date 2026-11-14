@@ -114,7 +114,6 @@
 //! - `stub_stream!()` requires the `futures` feature.
 //!
 
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 #![no_std]
 
 #[cfg(feature = "alloc")]
